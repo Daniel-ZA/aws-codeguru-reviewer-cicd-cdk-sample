@@ -45,6 +45,40 @@ export class GuruCdkSetupStack extends cdk.Stack {
         ],
       });
 
+      const cdkDeploymentPolicy: iam.PolicyDocument =
+      new iam.PolicyDocument({
+        statements: [
+          new iam.PolicyStatement({
+            actions: [
+              "sts:AssumeRole"
+            ],
+            resources: [`*`],
+            conditions: {
+              "ForAnyValue:StringEquals": {
+                "iam:ResourceTag/aws-cdk:bootstrap-role": [
+                  "deploy",
+                  "lookup",
+                  "file-publishing",
+                  "image-publishing"
+                ]
+              }
+            }
+          }),          
+        ],
+      });
+
+      const ecrAuth: iam.PolicyDocument =
+      new iam.PolicyDocument({
+        statements: [
+          new iam.PolicyStatement({
+            actions: [
+              "ecr:GetAuthorizationToken"
+            ],
+            resources: [`*`]
+          }),          
+        ],
+      });
+
     // IAM Role
     const role: iam.Role = new iam.Role(this, "GitHubActionRole", {
       roleName: "GitHubActionRole",
